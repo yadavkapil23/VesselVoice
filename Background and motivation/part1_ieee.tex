@@ -1,0 +1,373 @@
+\documentclass[conference]{IEEEtran}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage{cite}
+
+
+
+% 
+\title{Underwater Vessel Noise Classification Using the ShipsEar Dataset:\\
+       Background, Acoustic Theory, and Formal Problem Definition}
+
+\author{
+  \IEEEauthorblockN{Author Name(s)}
+  \IEEEauthorblockA{
+    \textit{Department / Lab Name}\\
+    \textit{Institution Name}\\
+    City, Country\\
+    email@institution.edu
+  }
+}
+
+% 
+\usepackage[hidelinks]{hyperref}
+\begin{document}
+\maketitle
+
+% 
+\begin{abstract}
+This report establishes the scientific and engineering context for underwater
+vessel noise classification using the ShipsEar dataset~\cite{shipsear2016}.
+We review the dataset's recording protocol and hydrophone specifications,
+examine the physical mechanisms governing underwater acoustic propagation
+(sound speed, transmission loss, multipath interference, propeller cavitation,
+machinery harmonics, and blade-rate modulation), characterise the five vessel
+categories in terms of their distinct spectral signatures, and formally define
+the classification task as a supervised multi-class pattern recognition
+problem. This background forms the theoretical foundation for all subsequent
+feature extraction, model training, and evaluation stages of the project.
+\end{abstract}
+
+\begin{IEEEkeywords}
+underwater acoustics, vessel noise classification, ShipsEar, propeller
+cavitation, LOFAR, DEMON, hydrophone, multi-class classification
+\end{IEEEkeywords}
+
+% 
+\section{Introduction}
+
+Identifying a vessel from its acoustic signature --- without visual contact ---
+is a long-standing problem in naval sonar, maritime surveillance, and marine
+environmental monitoring. A submerged hydrophone records a composite signal
+arising from propeller cavitation, engine vibration, hull flow noise, and
+propeller blade-rate modulation. Each vessel type imprints a characteristic
+spectral fingerprint on this signal, making automatic classification feasible
+through signal processing and machine learning.
+
+The ShipsEar dataset~\cite{shipsear2016}, introduced by Santos-Dom\'inguez
+\textit{et al.}\ in 2016, provides the first publicly available benchmark
+corpus for this task, covering five operationally distinct vessel classes
+recorded in a realistic estuarine environment. This part of the project
+reviews the dataset, the relevant acoustic physics, and states the
+classification objective precisely in mathematical terms.
+
+% 
+\section{Dataset Overview: ShipsEar}
+
+\subsection{Recording Setup}
+
+ShipsEar was recorded in the R\'ia de Vigo estuary, northwestern Spain.
+An omnidirectional HTI-96-MIN hydrophone was deployed at approximately
+1.5\,m depth. The sensor exhibits a flat frequency response from 2\,Hz
+to 30\,kHz with a sensitivity of $-$64\,dB re 1\,V/$\mu$Pa, making it
+well-suited for capturing the full spectral bandwidth of marine vessel noise.
+All 90 recordings are stored as uncompressed 16-bit PCM WAV files sampled at
+$f_s = 52{,}000$\,Hz. Recording durations vary from approximately 15\,s to
+over 3\,min, reflecting real-world operational diversity.
+
+\subsection{Vessel Taxonomy}
+
+The dataset is partitioned into five mutually exclusive vessel classes,
+summarised in Table~\ref{tab:classes}. The dataset is intentionally
+class-imbalanced: Class\,A (motorboats) is overrepresented relative to
+Classes\,C and E, an important consideration for classifier design and
+evaluation.
+
+\begin{table}[ht]
+  \caption{ShipsEar Vessel Classes and Acoustic Characteristics}
+  \label{tab:classes}
+  \centering
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{>{\bfseries}c l p{4.6cm}}
+    \toprule
+    \textbf{Label} & \textbf{Vessel Type} & \textbf{Acoustic Characteristics} \\
+    \midrule
+    A & Motorboats
+      & High-frequency broadband noise; intense propeller cavitation at high RPM; non-stationary. \\[4pt]
+    B & Mussel Boats
+      & Prominent diesel LOFAR tonal lines; slow blade-rate harmonics; stable narrowband peaks. \\[4pt]
+    C & Fishing Vessels
+      & Mixed broadband and tonal content; winch and gear noise; variable engine load. \\[4pt]
+    D & Passengers / Ferries
+      & Strong, stable engine harmonics (50--500\,Hz); consistent blade-rate due to fixed routes. \\[4pt]
+    E & Ocean Liners / Tugboats
+      & Very low fundamental frequency; highest source level; complex multi-shaft harmonics. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% 
+\section{Underwater Acoustic Propagation}
+
+\subsection{Speed of Sound}
+
+Sound travels in seawater at approximately 1{,}500\,m/s --- roughly 4.4 times
+faster than in air (343\,m/s). The empirical Mackenzie
+equation~\cite{mackenzie1981} gives the sound speed $c$ as a function of
+temperature $T$ ($^\circ$C), salinity $S$ (ppt), and depth $z$ (m):
+
+\begin{align}
+  c \approx\; & 1448.96 + 4.591T - 0.05304T^2 + 0.0002374T^3 \nonumber \\
+              & + 1.340(S-35) + 0.0163z \quad \text{[m/s].}
+  \label{eq:mackenzie}
+\end{align}
+
+The higher propagation speed relative to air results in longer acoustic
+wavelengths at any given frequency, enabling low-frequency vessel harmonics
+to propagate over kilometre-scale ranges with relatively low attenuation.
+
+\subsection{Transmission Loss}
+
+In shallow coastal waters such as the R\'ia de Vigo, acoustic energy
+undergoes cylindrical spreading supplemented by frequency-dependent
+absorption~\cite{urick1983}:
+
+\begin{equation}
+  \mathrm{TL} = 10 \log_{10}(r) + \alpha r \quad \text{[dB],}
+  \label{eq:tl}
+\end{equation}
+
+where $r$ is the source-to-receiver range in metres and $\alpha$ is the
+absorption coefficient in dB/m. Because $\alpha$ increases with frequency,
+high-frequency components (above $\sim$10\,kHz) are strongly attenuated at
+modest ranges, concentrating discriminative vessel information below 10\,kHz.
+This motivates resampling the ShipsEar data from 52\,kHz to a lower target
+rate (e.g., 22{,}050\,Hz) without information loss.
+
+\subsection{Multipath Interference}
+
+In shallow estuarine environments, acoustic energy undergoes multiple
+reflections from the pressure-release sea surface and the impedance-mismatch
+seabed. These multipath arrivals produce constructive and destructive
+interference at the hydrophone, causing frequency-selective fading and
+temporal smearing of tonal spectral features. Multipath effects are a
+principal source of within-class recording variability in ShipsEar and
+motivate the use of segment-level averaging in feature extraction.
+
+% 
+\section{Vessel Noise Generation Mechanisms}
+
+Three physical mechanisms dominate underwater vessel radiated noise and
+directly motivate the feature extraction choices described in Part\,4.
+
+\subsection{Propeller Cavitation}
+
+Cavitation occurs when the local pressure at a propeller blade surface falls
+below the vapour pressure of seawater, causing dissolved gas pockets to form
+and subsequently collapse. The implosions produce broadband high-frequency
+noise dominant above approximately 1\,kHz. Cavitation intensity scales with
+propeller tip speed and is particularly pronounced in small, fast vessels
+(Class\,A motorboats). Mel-frequency cepstral coefficients (MFCCs) and
+log-mel spectrograms are effective representations for capturing this
+broadband energy distribution.
+
+\subsection{Machinery Noise and LOFAR Lines}
+
+Diesel and petrol engines generate narrowband tonal lines at integer multiples
+of the shaft rotation frequency. For a shaft spinning at $\omega$ revolutions
+per minute, the fundamental machinery frequency is:
+
+\begin{equation}
+  f_0 = \frac{\omega}{60} \quad \text{[Hz].}
+  \label{eq:lofar_fundamental}
+\end{equation}
+
+The resulting harmonic series $\{f_0, 2f_0, 3f_0, \ldots\}$ appears as sharp
+peaks in a high-resolution power spectral density (PSD) estimate, commonly
+computed via Welch's method. These peaks are referred to as \textit{LOFAR
+lines} (Low-Frequency Analysis and Recording) and are among the most
+class-discriminative features in ShipsEar, particularly for Classes\,B and D.
+
+\subsection{Blade-Rate Harmonics and DEMON Spectrum}
+
+As each propeller blade passes through the non-uniform wake behind a shaft
+strut, it generates a periodic pressure pulse. For a propeller with $N_b$
+blades on a shaft rotating at $\omega$\,RPM, the fundamental blade-rate
+frequency is:
+
+\begin{equation}
+  f_\mathrm{BR} = N_b \cdot \frac{\omega}{60} \quad \text{[Hz].}
+  \label{eq:blade_rate}
+\end{equation}
+
+Blade-rate harmonics modulate the amplitude envelope of the broadband
+cavitation noise. The \textit{DEMON} (Detection of Envelope Modulation on
+Noise) technique demodulates this envelope via a Hilbert transform, then
+computes the PSD of the envelope signal to reveal $f_\mathrm{BR}$ and its
+harmonics. DEMON features are highly discriminative for propeller-driven
+vessels and complement LOFAR analysis.
+
+% 
+\section{Acoustic Profiles of Vessel Classes}
+
+Building intuition for class-specific spectral characteristics is essential
+before modelling decisions are made.
+
+\textbf{Class\,A --- Motorboats:} Smallest and fastest vessels. High
+rotational speed produces intense cavitation; dominant spectral energy is
+broadband above 2\,kHz. Signals are non-stationary due to variable throttle.
+
+\textbf{Class\,B --- Mussel Boats:} Medium-sized working vessels at slow,
+steady speed. Diesel LOFAR lines are sharp and stable. Blade-rate frequency
+is low ($\approx$1--4\,Hz). The combination of strong narrowband peaks and
+low broadband floor makes this class relatively easy to separate.
+
+\textbf{Class\,C --- Fishing Vessels:} Spectral non-stationarity arises from
+switching between transit and active trawling modes. Winch and mechanical gear
+noise introduce additional tonal components absent in other classes.
+
+\textbf{Class\,D --- Passengers/Ferries:} Large vessels with fixed regular
+routes and consistent engine loads. Stable harmonic series dominates
+50--500\,Hz. May be confused with Class\,B due to overlapping blade-rate
+range; separation relies on source level and harmonic spacing differences.
+
+\textbf{Class\,E --- Ocean Liners/Tugboats:} Highest source levels in the
+dataset. Very low fundamental frequencies result from large, slow-turning
+propellers. Multi-shaft configurations produce complex overlapping harmonic
+patterns. Cavitation is present at full operational load.
+
+% 
+\section{Formal Problem Definition}
+
+\subsection{Input Space}
+
+Let $\mathbf{x} \in \mathbb{R}^{N}$ denote a fixed-length audio segment
+captured by the hydrophone, where:
+
+\begin{equation}
+  N = T_s \times f_s,
+  \label{eq:input_dim}
+\end{equation}
+
+$T_s$ is the segment duration in seconds (e.g., 3\,s) and $f_s$ is the
+(resampled) sampling rate. Each segment is obtained by applying a sliding
+window with hop size $H < T_s$ to a raw recording, discarding any terminal
+remainder shorter than $T_s$.
+
+\subsection{Label Space and Classification Objective}
+
+Each segment is assigned a discrete class label $y$ from the finite set:
+
+\begin{equation}
+  y \in \mathcal{Y} = \{\,A,\; B,\; C,\; D,\; E\,\}.
+  \label{eq:label_set}
+\end{equation}
+
+The learning objective is to find an optimal classifier $f^*$ that minimises
+the expected classification loss $\mathcal{L}$ over the joint data
+distribution $p(\mathbf{x}, y)$:
+
+\begin{equation}
+  f^* = \operatorname*{arg\,min}_{f}\;
+        \mathbb{E}_{(\mathbf{x},\,y)\sim p}\!\left[\,
+        \mathcal{L}\!\left(f(\mathbf{x}),\, y\right)\right].
+  \label{eq:objective}
+\end{equation}
+
+In practice, $f$ operates on a compact feature representation
+$\boldsymbol{\phi}(\mathbf{x}) \in \mathbb{R}^{D}$ with $D \ll N$, extracted
+via handcrafted signal processing (MFCCs, LOFAR, DEMON) or a learned
+convolutional encoder (log-mel spectrogram).
+
+\subsection{Key Assumptions and Constraints}
+
+The following assumptions govern the problem formulation:
+
+\begin{enumerate}
+  \item \textbf{Single-channel input:} Each segment is captured by one
+        omnidirectional hydrophone; no spatial beamforming is assumed.
+
+  \item \textbf{Mutual exclusivity:} Labels are exhaustive and mutually
+        exclusive --- each segment belongs to exactly one class in
+        $\mathcal{Y}$.
+
+  \item \textbf{Recording-level splitting:} Train, validation, and test sets
+        are partitioned at the \emph{recording} level (not the segment level)
+        to prevent data leakage between overlapping windows derived from the
+        same source file.
+
+  \item \textbf{Class imbalance:} ShipsEar is imbalanced; model training uses
+        class-weighted loss, and evaluation relies on macro-averaged F1-score
+        and AUC-ROC rather than raw accuracy alone.
+
+  \item \textbf{Reproducibility:} All random operations (splitting,
+        weight initialisation) are seeded with fixed values from
+        $\{0, 7, 21, 42, 99\}$; mean $\pm$ standard deviation is reported
+        across five runs.
+\end{enumerate}
+
+\subsection{Performance Metrics}
+
+Let $\hat{y} = f(\mathbf{x})$ denote the predicted label. The primary
+evaluation metrics are:
+
+\begin{align}
+  \text{Accuracy} &= \frac{1}{|\mathcal{T}|}\sum_{i\in\mathcal{T}}
+                     \mathbf{1}[\hat{y}_i = y_i], \label{eq:acc} \\[4pt]
+  \text{Macro-F1} &= \frac{1}{|\mathcal{Y}|}\sum_{c\in\mathcal{Y}}
+                     \frac{2\,P_c\,R_c}{P_c + R_c}, \label{eq:f1} \\[4pt]
+  \text{Macro-AUC} &= \frac{1}{|\mathcal{Y}|}\sum_{c\in\mathcal{Y}}
+                      \mathrm{AUC}_{\mathrm{OVR}}(c), \label{eq:auc}
+\end{align}
+
+where $P_c$ and $R_c$ are the precision and recall for class $c$,
+$\mathcal{T}$ is the held-out test set, and AUC$_\mathrm{OVR}$ is computed
+under a one-vs-rest scheme.
+
+% 
+\section{Conclusion}
+
+This part has established the complete scientific context required before any
+data processing or modelling. The ShipsEar dataset provides 90 hydrophone
+recordings across five acoustically distinct vessel classes in a realistic
+shallow-water environment. The dominant noise mechanisms --- propeller
+cavitation, LOFAR engine harmonics, and blade-rate modulation --- motivate the
+feature engineering choices pursued in Parts\,3--4. The formal problem
+definition introduces the mathematical notation, loss framework, evaluation
+metrics, and experimental constraints used throughout the remainder of the
+project.
+
+% 
+\begin{thebibliography}{9}
+
+\bibitem{shipsear2016}
+D.~Santos-Dom\'inguez, S.~Torres-Guijarro, A.~Cardenal-L\'opez, and A.~Pena,
+``ShipsEar: An underwater vessel noise database,''
+\textit{Applied Acoustics}, vol.~113, pp.~64--69, 2016.
+\url{https://doi.org/10.1016/j.apacoust.2016.06.008}
+
+\bibitem{urick1983}
+R.~J. Urick,
+\textit{Principles of Underwater Sound}, 3rd~ed.
+New York, NY, USA: McGraw-Hill, 1983.
+
+\bibitem{ross1976}
+D.~Ross,
+\textit{Mechanics of Underwater Noise}.
+New York, NY, USA: Pergamon Press, 1976.
+
+\bibitem{mackenzie1981}
+K.~V. Mackenzie,
+``Nine-term equation for sound speed in the oceans,''
+\textit{Journal of the Acoustical Society of America},
+vol.~70, no.~3, pp.~807--812, 1981.
+
+\end{thebibliography}
+
+\end{document}

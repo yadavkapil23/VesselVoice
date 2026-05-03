@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200;
+  }
+}
+
+.glass-panel {
+  @apply bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl;
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.accent-glow {
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+}

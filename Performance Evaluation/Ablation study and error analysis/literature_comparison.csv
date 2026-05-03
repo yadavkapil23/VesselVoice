@@ -1,0 +1,10 @@
+Reference,Method,Accuracy,Notes
+Ours,SVM RBF,0.9251,"Grid search C,γ, handcrafted 334-dim"
+Ours,Random Forest,0.8922,"Best n_estimators, handcrafted 334-dim"
+Xie et al. (2022),ResNet + data augmentation,0.872,State-of-the-art with augmentation
+Ours,KNN,0.8533,"k=best, Euclidean, handcrafted 334-dim"
+Irfan et al. (2021),CNN + Mel Spectrogram,0.843,ShipEar deep learning benchmark
+Santos-Domínguez et al. (2016),SVM + MFCC,0.754,Best classical baseline in original paper
+Santos-Domínguez et al. (2016),GMM + MFCC,0.726,Original ShipsEar paper — 5-fold CV
+Ours,CNN (scratch),0.3281,"3-block CNN, log-mel 128×128"
+Ours,ResNet-18,0.2584,"Fine-tuned, log-mel 128×128"
