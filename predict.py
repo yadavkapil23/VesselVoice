@@ -363,7 +363,7 @@ def predict(audio_path, model_type='cnn', top_k=3, device='cpu'):
     5. Return final prediction with confidence scores
     """
     print(f"\n{'='*60}")
-    print(f"  ShipsEar Vessel Noise Classifier")
+    print(f"  VesselVoice Classifier")
     print(f"{'='*60}")
     print(f"  Audio file : {audio_path}")
     print(f"  Model      : {model_type.upper()}")
@@ -442,7 +442,7 @@ def predict(audio_path, model_type='cnn', top_k=3, device='cpu'):
 # ─── CLI Entry Point ──────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description='Predict vessel class from underwater audio using trained ShipsEar models.',
+        description='Predict vessel class from underwater audio using trained VesselVoice models.',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Vessel Classes:

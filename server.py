@@ -8,7 +8,7 @@ import uvicorn
 # Import prediction logic from predict.py
 from predict import predict
 
-app = FastAPI(title="ShipsEar API")
+app = FastAPI(title="VesselVoice API")
 
 # Enable CORS for React frontend
 app.add_middleware(

@@ -1,11 +1,11 @@
-# 🚢 ShipsEar AI: Underwater Vessel Noise Classification
+# 🚢 VesselVoice: Underwater Vessel Noise Classification
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg)](https://pytorch.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-v0.100+-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB.svg)](https://reactjs.org/)
 
-**ShipsEar AI** is a professional-grade full-stack application designed to classify vessels based on their underwater acoustic signatures. By leveraging the **ShipsEar** dataset, the system uses advanced signal processing and deep learning to identify five distinct categories of marine vessels with high precision.
+**VesselVoice** is a professional-grade full-stack application designed to classify vessels based on their underwater acoustic signatures. By leveraging the **ShipsEar** dataset, the system uses advanced signal processing and deep learning to identify five distinct categories of marine vessels with high precision.
 
 ---
 
@@ -104,4 +104,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**ShipsEar AI** — *Listening to the pulse of the ocean.* 🌊⚓
+**VesselVoice** — *Listening to the pulse of the ocean.* 🌊⚓

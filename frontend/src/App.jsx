@@ -103,7 +103,7 @@ const App = () => {
           <div className="p-2 primary-gradient rounded-lg shadow-lg">
             <Waves className="w-6 h-6 text-white" />
           </div>
-          <span className="text-xl font-display font-bold tracking-tight">ShipsEar <span className="text-primary-500">AI</span></span>
+          <span className="text-xl font-display font-bold tracking-tight">Vessel<span className="text-primary-500">Voice</span></span>
         </div>
         <div className="flex items-center space-x-4">
           <a href="#about" className="text-sm text-slate-400 hover:text-white transition-colors">Documentation</a>
