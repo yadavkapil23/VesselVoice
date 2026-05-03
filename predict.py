@@ -15,12 +15,12 @@ import torchvision.models as models
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Paths to saved models
-CNN_WEIGHTS    = os.path.join(PROJECT_ROOT, "Part 5 Classification models", "Deep learning  CNN on mel log spectrogram (MFCC)", "model weights", "cnn_scratch.pth")
-RESNET_WEIGHTS = os.path.join(PROJECT_ROOT, "Part 5 Classification models", "Deep learning  CNN on mel log spectrogram (MFCC)", "model weights", "resnet18_finetuned.pth")
-KNN_MODEL      = os.path.join(PROJECT_ROOT, "Part 5 Classification models", "Baseline classical classifier models", "models", "knn_best.pkl")
-SVM_MODEL      = os.path.join(PROJECT_ROOT, "Part 5 Classification models", "Baseline classical classifier models", "models", "svm_rbf_best.pkl")
-RF_MODEL       = os.path.join(PROJECT_ROOT, "Part 5 Classification models", "Baseline classical classifier models", "models", "rf_best.pkl")
-SCALER_PATH    = os.path.join(PROJECT_ROOT, "Part 4  Feature extraction", "Hand crafted features", "scaler.pkl")
+CNN_WEIGHTS    = os.path.join(PROJECT_ROOT, "Classification models", "Deep learning  CNN on mel log spectrogram (MFCC)", "model weights", "cnn_scratch.pth")
+RESNET_WEIGHTS = os.path.join(PROJECT_ROOT, "Classification models", "Deep learning  CNN on mel log spectrogram (MFCC)", "model weights", "resnet18_finetuned.pth")
+KNN_MODEL      = os.path.join(PROJECT_ROOT, "Classification models", "Baseline classical classifier models", "models", "knn_best.pkl")
+SVM_MODEL      = os.path.join(PROJECT_ROOT, "Classification models", "Baseline classical classifier models", "models", "svm_rbf_best.pkl")
+RF_MODEL       = os.path.join(PROJECT_ROOT, "Classification models", "Baseline classical classifier models", "models", "rf_best.pkl")
+SCALER_PATH    = os.path.join(PROJECT_ROOT, "Feature extraction", "Hand crafted features", "scaler.pkl")
 
 TARGET_SR       = 16000   
 SEGMENT_DURATION = 5.0    
