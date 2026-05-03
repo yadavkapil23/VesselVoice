@@ -23,12 +23,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy prediction logic and models
 COPY predict.py .
 COPY server.py .
-COPY "Background and motivation/" "Background and motivation/"
-COPY "Classification models/" "Classification models/"
-COPY "Feature extraction/" "Feature extraction/"
-COPY "Performance Evaluation/" "Performance Evaluation/"
-COPY Preprocessing/ Preprocessing/
-COPY data/ data/
+COPY ["Background and motivation/", "Background and motivation/"]
+COPY ["Classification models/", "Classification models/"]
+COPY ["Feature extraction/", "Feature extraction/"]
+COPY ["Performance Evaluation/", "Performance Evaluation/"]
+COPY ["Preprocessing/", "Preprocessing/"]
+COPY ["data/", "data/"]
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
