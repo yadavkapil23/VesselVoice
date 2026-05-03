@@ -50,5 +50,18 @@ async def api_predict(
 async def health():
     return {"status": "ok"}
 
+# Serve Frontend Static Files (for production)
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
+
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
+    
+    @app.exception_handler(404)
+    async def not_found_exception_handler(request, exc):
+        return FileResponse(os.path.join(frontend_path, "index.html"))
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
