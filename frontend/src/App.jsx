@@ -107,7 +107,14 @@ const App = () => {
         </div>
         <div className="flex items-center space-x-4">
           <a href="#about" className="text-sm text-slate-400 hover:text-white transition-colors">Documentation</a>
-          <button className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition-all">GitHub</button>
+          <a 
+            href="https://github.com/yadavkapil23/VesselVoice" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition-all inline-block"
+          >
+            GitHub
+          </a>
         </div>
       </nav>
 
