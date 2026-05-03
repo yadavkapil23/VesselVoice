@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/predict")
+@app.post("/api/predict")
 async def api_predict(
     file: UploadFile = File(...),
     model: str = Form("cnn"),
@@ -46,7 +46,7 @@ async def api_predict(
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-@app.get("/health")
+@app.get("/api/health")
 async def health():
     return {"status": "ok"}
 
